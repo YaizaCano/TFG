@@ -13,19 +13,20 @@ contract Reputation {
     
     struct URL {
         string name;            // url's name
-        uint256 reputation;     // raw reputation
-        uint256 votes;          // number of votes received
+        int256 reputation;     // raw reputation
+        int256 votes;          // number of votes received
     }
     
     URL[] urlList;
-    Voter[] voters; 
+    Voter[] voters;
+    uint maxVotes = 200;
     
     constructor() {
         console.log("Welcome to URL reputation system");
     }
   
     
-    function getURLReputation (string memory _url) public view returns (uint256) {
+    function getURLReputation (string memory _url) public view returns (int256) {
         uint i = getURL(_url);
         return urlList[i].reputation/urlList[i].votes*100;
     }
@@ -39,6 +40,7 @@ contract Reputation {
     }
     
     function addURL (string memory _url) public {
+        checkURL(_url);
         urlList.push(URL({
             name: _url,
             reputation: 0,
@@ -60,25 +62,23 @@ contract Reputation {
     }
     
     function getVoterIndex (string memory _url) private returns (uint) {
-        bool _exists = false;
-        for (uint i = 0; i < voters.length && !_exists; i++) {
+        for (uint i = 0; i < voters.length; i++) {
             if (voters[i].addr == msg.sender) {
-                _exists = true;
                 for (uint j = 0; j < voters[i].urlsVoted.length; j++) {
                     require (keccak256(abi.encodePacked(voters[i].urlsVoted[j]))!=keccak256(abi.encodePacked(_url)),
                     "You have already voted this URL");
                 }
                 voters[i].urlsVoted.push(_url);
+                return i;
             }
         }
-        console.log("Exists bool: %s", _exists);
-        if (!_exists) {
-            Voter memory v;
-            v.reliability = 0;
-            v.addr = msg.sender;
-            voters.push(v);
-            voters[voters.length-1].urlsVoted.push(_url);
-        }
+       
+        Voter memory v;
+        v.reliability = 0;
+        v.addr = msg.sender;
+        voters.push(v);
+        voters[voters.length-1].urlsVoted.push(_url);
+        return voters.length-1;
     }
     
     function getURL (string memory _url) private view returns (uint256){
@@ -89,4 +89,12 @@ contract Reputation {
         }
         return i;
     }
+    
+    function checkURL (string memory _url) private view {
+        for (uint i = 0; i < urlList.length; i++) {
+            require(keccak256(abi.encodePacked(urlList[i].name))!=keccak256(abi.encodePacked(_url)), 
+            "The URL exists already in our db.");
+        }
+    }
+
 }

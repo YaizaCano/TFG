@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+.repButton {
+  margin-left: 2em;
+}
+
+
+ul {
+  overflow-y: scroll;
+  height: 20em;
+}
+
+li {
+  list-style-type: none;
+}
