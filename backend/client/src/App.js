@@ -1,80 +1,94 @@
 import React, { Component } from 'react';
 import './App.css';
-import axios from 'axios'
-
-/*class App extends Component {
-
-  render(){
-  return (
-    <div className="App">
-        <header className="App-header">
-        <p>
-          Click any of the bottom buttons
-        </p>
-        <form action="/api/url-list" method="post" 
-              className="form">
-          <button type="submit">See URL list available</button>
-        </form>
-        <form action="/api/url-reputation?name=yaiza" method="post" 
-              className="form">
-          <label>
-            URL:
-            <input type="text" name="name"/>
-          </label>
-          <input type="submit" value="Submit"/>
-        </form>
-      </header>
-    </div>
-  );
-}
-}*/
-
-
-
+import axios from 'axios';
+import { Table, Button } from 'react-bootstrap';
 
 class App extends Component {
   state = {
-    response: [],
     urllist: [],
-    reputation: {},
+    reputations: [],
   };
 
   componentDidMount() {
-    axios.get('/api/say-something').then((res) => {
-      const response = res.data;
-      this.setState({response});
-    });
-    axios.get('/api/url-list').then((res) => {
+    /*axios.get('/api/url-list').then((res) => {
       const urllist = res.data;
       this.setState({urllist});
     });
-    /*axios.get('/api/url-reputation', {
-      params: {
-        name: 'yaiza'      
-      }
-    }).then((res) => {
-      const reputation = res.data;
-      this.setState({reputation});
-      //RECORDA FER .TOSTRING SINÓ NO FURULA
+    axios.get('/api/url-reputations').then((res) => {
+      const reputations = res.data;
+      this.setState({reputations});
     });*/
+    axios.all([
+      axios.get('/api/url-list'), 
+      axios.get('/api/url-reputations')
+    ])
+    .then(axios.spread((list, reps) => {
+      const reputations = reps.data;
+      const urllist = list.data;
+      this.setState({reputations});
+      this.setState({urllist});
+    }));
+
   }
+
+  handleReliable(url) {
+    axios.post('/api/vote-reliable', {
+      name: url
+    }).then((res) => {
+      console.log("Voted counted to " + url);
+    });
+    window.location.reload()
+  }
+
+  handleDangerous(url) {
+    axios.post('/api/vote-dangerous', {
+      name: url
+    }).then((res) => {
+      console.log("Voted counted to " + url);
+    });
+    window.location.reload()
+  }
+
+  renderTableData() {
+      return this.state.urllist.map((url, index) => {
+         //const { name } = url //destructuring
+         return (
+            <tr key={index}>
+              <td>{index}</td>
+              <td>{url}</td>
+              <td>{this.state.reputations[index]}%</td>
+              <td>
+                <Button onClick={() => this.handleReliable(url)} variant="success">Reliable</Button>{''}
+              </td>
+              <td>
+                <Button onClick={() => this.handleDangerous(url)} variant="danger">Dangerous</Button>
+              </td>
+            </tr>
+         )
+      })
+   }
 
   render() {
     return (
       <div className="App">
         <h1>URL LIST</h1>
-        <ul>
-          {this.state.urllist.map(name => 
-            <li key={name}>
-              <form action={"/api/url-reputation?name=" + name} method="post" 
-                    className="form">
-                {name}
-                <input className="repButton" type="submit" value="See reputation"/>
-              </form>
-            </li>
-          )}
-        </ul>
+        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.css" rel="stylesheet"/>
+        <div className="table">
+          <Table responsive="md" striped bordered hover id="urlTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>URL Name</th>
+                <th>URL Reputation</th>
+                <th colSpan="2">Vote</th>
+              </tr>
+            </thead>
+            <tbody>{this.renderTableData()}</tbody>
+          </Table>
+        </div>
+        <h1>VOTERS LIST</h1>
       </div>
+
     );
   }
 

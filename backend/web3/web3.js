@@ -24,5 +24,23 @@ const getURLReputation = async (req, res, next) => {
 	res.send(urlReputation);
 }
 
+const getURLReputations = async (req, res, next) => {
+	const urlReputations = await myContract.methods.getURLReputations().call();
+	res.send(urlReputations);
+}
+
+const voteReliable = async (req, res, next) => {
+	const voteReliable = await myContract.methods.vote(req.body.name, true).send({from: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC'});
+	res.send(voteReliable);
+}
+
+const voteDangerous = async (req, res, next) => {
+	const voteDangerous = await myContract.methods.vote(req.body.name, false).send({from: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC'});
+	res.send(voteDangerous);
+}
+
 module.exports.getURLList = getURLList;
 module.exports.getURLReputation = getURLReputation;
+module.exports.getURLReputations = getURLReputations;
+module.exports.voteReliable = voteReliable;
+module.exports.voteDangerous = voteDangerous;
