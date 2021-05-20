@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Modal } from 'react-bootstrap';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
 
 class App extends Component {
   state = {
     urllist: [],
     reputations: [],
+    voterlist: [],
+    show: false,
   };
 
   componentDidMount() {
@@ -20,13 +24,17 @@ class App extends Component {
     });*/
     axios.all([
       axios.get('/api/url-list'), 
-      axios.get('/api/url-reputations')
+      axios.get('/api/url-reputations'),
+      axios.get('/api/voter-list')
     ])
-    .then(axios.spread((list, reps) => {
+    .then(axios.spread((list, reps, voters) => {
       const reputations = reps.data;
       const urllist = list.data;
+      const voterlist = voters.data;
+      console.log(voterlist)
       this.setState({reputations});
       this.setState({urllist});
+      this.setState({voterlist});
     }));
 
   }
@@ -49,13 +57,13 @@ class App extends Component {
     window.location.reload()
   }
 
-  renderTableData() {
+  renderURLTableData() {
       return this.state.urllist.map((url, index) => {
          //const { name } = url //destructuring
          return (
             <tr key={index}>
               <td>{index}</td>
-              <td>{url}</td>
+              <td className="address">{url}</td>
               <td>{this.state.reputations[index]}%</td>
               <td>
                 <Button onClick={() => this.handleReliable(url)} variant="success">Reliable</Button>{''}
@@ -65,6 +73,32 @@ class App extends Component {
               </td>
             </tr>
          )
+      })
+   }
+
+  showURLVoted(list) {
+    console.log(list);
+  }
+
+  renderVoterTableData() {
+      return this.state.voterlist.map((voter, index) => {
+            //const { rel, add, list } = voter;
+          return (
+            <tr key={index}>
+              <td>{index}</td>
+              <td className="address">{voter[1]}</td>
+              <td>{voter[0]}</td>
+              <td>
+                <ul>
+                  {voter[2].map((url) => {
+                    return (
+                      <li>{url}</li>
+                    )
+                  })}
+                </ul>
+              </td>
+            </tr>
+          )
       })
    }
 
@@ -78,15 +112,29 @@ class App extends Component {
             <thead>
               <tr>
                 <th>#</th>
-                <th>URL Name</th>
-                <th>URL Reputation</th>
+                <th>Name</th>
+                <th>Reputation</th>
                 <th colSpan="2">Vote</th>
               </tr>
             </thead>
-            <tbody>{this.renderTableData()}</tbody>
+            <tbody>{this.renderURLTableData()}</tbody>
           </Table>
         </div>
         <h1>VOTERS LIST</h1>
+        <div className="table">
+          <Table responsive="md" striped bordered hover id="urlTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Adress</th>
+                <th>Reputation</th>
+                <th>URLs Voted</th>
+              </tr>
+            </thead>
+            <tbody>{this.renderVoterTableData()}</tbody>
+          </Table>
+        </div>
+        
       </div>
 
     );

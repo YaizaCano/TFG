@@ -10,5 +10,6 @@ router.post('/url-reputation', web3.getURLReputation);
 router.get('/url-reputations', web3.getURLReputations);
 router.post('/vote-reliable', web3.voteReliable);
 router.post('/vote-dangerous', web3.voteDangerous);
+router.get('/voter-list', web3.getVoters);
 
 module.exports = router;
