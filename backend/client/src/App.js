@@ -11,6 +11,7 @@ class App extends Component {
     reputations: [],
     voterlist: [],
     show: false,
+    value: ''
   };
 
   componentDidMount() {
@@ -43,18 +44,18 @@ class App extends Component {
     axios.post('/api/vote-reliable', {
       name: url
     }).then((res) => {
-      console.log("Voted counted to " + url);
+      alert('Your vote has been counted to ' + url);
+      window.location.reload()
     });
-    window.location.reload()
   }
 
   handleDangerous(url) {
     axios.post('/api/vote-dangerous', {
       name: url
     }).then((res) => {
-      console.log("Voted counted to " + url);
+      alert('Your vote has been counted to ' + url);
+      window.location.reload()
     });
-    window.location.reload()
   }
 
   renderURLTableData() {
@@ -81,31 +82,53 @@ class App extends Component {
   }
 
   renderVoterTableData() {
-      return this.state.voterlist.map((voter, index) => {
-            //const { rel, add, list } = voter;
-          return (
-            <tr key={index}>
-              <td>{index}</td>
-              <td className="address">{voter[1]}</td>
-              <td>{voter[0]}</td>
-              <td>
-                <ul>
-                  {voter[2].map((url) => {
-                    return (
-                      <li>{url}</li>
-                    )
-                  })}
-                </ul>
-              </td>
-            </tr>
-          )
-      })
-   }
+    return this.state.voterlist.map((voter, index) => {
+          //const { rel, add, list } = voter;
+        return (
+          <tr key={index}>
+            <td>{index}</td>
+            <td className="address">{voter[1]}</td>
+            <td>{voter[0]}</td>
+            <td>
+              <ul>
+                {voter[2].map((url) => {
+                  return (
+                    <li>{url}</li>
+                  )
+                })}
+              </ul>
+            </td>
+          </tr>
+        )
+    })
+  }
+
+  handleSubmit() {
+    axios.post('/api/add-url', {
+      name: this.state.value
+    }).then((res) => {
+      console.log("Voted counted to " + this.state.value);
+    });
+
+    alert(this.state.value +' has been added with initial reputation');
+  }
+
+  handleChange(value) {
+    this.setState({value})
+  }
+
 
   render() {
     return (
       <div className="App">
         <h1>URL LIST</h1>
+        <form onSubmit={() => this.handleSubmit()}>
+          <label>
+            Add URL:
+            <input type="text" name="name" onChange={event => this.handleChange(event.target.value)}/>
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.css" rel="stylesheet"/>
         <div className="table">
           <Table responsive="md" striped bordered hover id="urlTable">
