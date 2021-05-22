@@ -11,21 +11,13 @@ class App extends Component {
     urllist: [],
     voterlist: [],
     urlnames:[],
-    urlsvoted: [],
+    //voteraddresses: [],
     value: '',
     web3: {},
     accounts: [],
   };
 
   async componentDidMount() {
-    /*axios.get('/api/url-list').then((res) => {
-      const urllist = res.data;
-      this.setState({urllist});
-    });
-    axios.get('/api/url-reputations').then((res) => {
-      const reputations = res.data;
-      this.setState({reputations});
-    });*/
     await axios.all([
       axios.get('/api/url-list'),
       axios.get('/api/voter-list')
@@ -42,6 +34,12 @@ class App extends Component {
       urlnames.push(url[0]);
     })
     this.setState({urlnames});
+
+    /*const voteraddresses = [];
+    this.state.voterlist.map((voter) => {
+      voteraddresses.push(voter[0]);
+    })
+    this.setState({voteraddresses});*/
 
     const web3 = new Web3(window.ethereum);
     web3.eth.handleRevert = true;
@@ -71,25 +69,26 @@ class App extends Component {
   }
 
   renderURLTableData() {
-      return this.state.urllist.map((url, index) => {
-         //const { name, rep, votes } = url //destructuringç
-         var rep = Number(50).toFixed(2)
-         if (url[1] !== '0') rep = (Number(url[1]/url[2])*100).toFixed(2)
-         return (
-            <tr key={index}>
-              <td>{index}</td>
-              <td className="address">{url[0]}</td>
-              <td>{rep}%</td>
-              <td>
-                <Button onClick={() => this.handleReliable(url[0])} variant="success">Reliable</Button>
-              </td>
-              <td>
-                <Button onClick={() => this.handleDangerous(url[0])} variant="danger">Dangerous</Button>
-              </td>
-            </tr>
-         )
-      })
-   }
+    return this.state.urllist.map((url, index) => {
+      //const { name, rep, votes } = url //destructuringç
+      var rep = Number(50).toFixed(2)
+      if (url[1] !== '0') rep = (Number(url[1]/url[2])*100).toFixed(2)
+      
+      return (
+        <tr key={index}>
+          <td>{index}</td>
+          <td className="address">{url[0]}</td>
+          <td>{rep}%</td>
+          <td>
+            <Button onClick={() => this.handleReliable(url[0])} variant="success">Reliable</Button>
+          </td>
+          <td>
+            <Button onClick={() => this.handleDangerous(url[0])} variant="danger">Dangerous</Button>
+          </td>
+        </tr>
+      )
+    })
+  }
 
   renderVoterTableData() {
     //reliability is computed as Trust X Credibility. 
@@ -199,6 +198,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.css" rel="stylesheet"/>
 
         <h1>URL LIST</h1>
 
@@ -210,10 +210,9 @@ class App extends Component {
           <input type="submit" value="Submit" />
         </form>
 
-
-        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.css" rel="stylesheet"/>
-        <div className="table">
         <input className="form-control" id="urlInput" type="text" placeholder="Search URL by Name..." onKeyUp={() => this.urlSearch()}/>
+
+        <div className="table">
           <Table responsive="md" striped bordered hover id="urlTable">
             <thead>
               <tr>
@@ -229,8 +228,8 @@ class App extends Component {
 
         <h1>VOTERS LIST</h1>
         
-        <div className="table">
         <input className="form-control" id="voterInput" type="text" placeholder="Search Voter by Adress..." onKeyUp={() => this.voterSearch()}/>
+        <div className="table">
           <Table responsive="md" striped bordered hover id="voterTable">
             <thead>
               <tr>

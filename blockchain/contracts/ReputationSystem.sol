@@ -6,9 +6,9 @@ import "hardhat/console.sol";
 
 contract Reputation {
     struct Voter {
-        uint reliability;       // person's reputation
         address addr;           // person ho has voted
         string[] urlsVoted;     // urls voted by a person
+        int[] votes;           // votes recorded
     }
     
     struct URL {
@@ -26,19 +26,6 @@ contract Reputation {
     }
   
     
-    function getURLReputation (string memory _url) public view returns (int256) {
-        uint i = getURL(_url);
-        return urlList[i].reputation/urlList[i].votes*100;
-    }
-    
-    function showURLList () public view returns (string[] memory) {
-        string[] memory urls = new string[] (urlList.length);
-        for (uint i = 0; i < urlList.length; i++) {
-            urls[i] = urlList[i].name;
-        }
-        return urls;
-    }
-    
     function addURL (string memory _url) public {
         checkURL(_url);
         urlList.push(URL({
@@ -51,10 +38,20 @@ contract Reputation {
     
     function vote (string memory _url, bool _vote) public {
         uint i = getURL(_url);
-        getVoterIndex(_url);
+        uint v = getVoterIndex(_url);
         urlList[i].votes++;
-        if (_vote) urlList[i].reputation++;
-        else urlList[i].reputation--;
+        if (_vote) {
+            urlList[i].reputation++;
+            voters[v].votes.push(1);
+        }
+        else {
+            urlList[i].reputation--;
+            voters[v].votes.push(-1);
+        }
+    }
+    
+    function getURLList() public view returns (URL[] memory) {
+        return urlList;
     }
     
     function getVotersList () public view returns (Voter[] memory) {
@@ -74,7 +71,6 @@ contract Reputation {
         }
        
         Voter memory v;
-        v.reliability = 0;
         v.addr = msg.sender;
         voters.push(v);
         voters[voters.length-1].urlsVoted.push(_url);
@@ -96,5 +92,34 @@ contract Reputation {
             "The URL exists already in our db.");
         }
     }
+    
+    
+    
+    /*function getURLReputation (string memory _url) public view returns (int256) {
+        uint i = getURL(_url);
+        if (urlList[i].reputation==0) return 50;
+        return urlList[i].reputation/urlList[i].votes*100;
+    }
+    
+    function getURLReputations () public view returns (int256[] memory) {
+        int256[] memory reps = new int256[] (urlList.length);
+        for (uint i = 0; i < urlList.length; i++) {
+            if (urlList[i].reputation != 0) {
+                reps[i] = (urlList[i].reputation/urlList[i].votes)*100;
+            }
+            else {
+                reps[i] = 50;
+            }
+        }
+        return reps;
+    }
+    
+    function showURLList () public view returns (string[] memory) {
+        string[] memory urls = new string[] (urlList.length);
+        for (uint i = 0; i < urlList.length; i++) {
+            urls[i] = urlList[i].name;
+        }
+        return urls;
+    }*/
 
 }

@@ -1,9 +1,13 @@
 const Web3 = require('web3');
-const abi = require('./abi.json');
+//const abi = require('./abi.json');
+
+const metadata = require('../../blockchain/artifacts/contracts/ReputationSystem.sol/Reputation.json');
+console.log(metadata.abi);
+
 
 let web3 = new Web3("http://127.0.0.1:8545/");
 web3.eth.handleRevert = true;
-const myContract = new web3.eth.Contract(abi, 
+const myContract = new web3.eth.Contract(metadata.abi, 
 	'0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9');
 
 
