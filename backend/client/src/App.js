@@ -135,6 +135,10 @@ class App extends Component {
     return cred/votes.length;
   }
 
+
+  handleChange(value) {
+    this.setState({value})
+  }
     
   handleSubmit() {
 
@@ -153,10 +157,44 @@ class App extends Component {
 
   }
 
-  handleChange(value) {
-    this.setState({value})
+  urlSearch() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("urlInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("urlTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[1];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }       
+    }
   }
 
+  voterSearch() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("voterInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("voterTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[1];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }       
+    }
+  }
+        
 
   render() {
     return (
@@ -172,8 +210,10 @@ class App extends Component {
           <input type="submit" value="Submit" />
         </form>
 
+
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.css" rel="stylesheet"/>
         <div className="table">
+        <input className="form-control" id="urlInput" type="text" placeholder="Search URL by Name..." onKeyUp={() => this.urlSearch()}/>
           <Table responsive="md" striped bordered hover id="urlTable">
             <thead>
               <tr>
@@ -190,7 +230,8 @@ class App extends Component {
         <h1>VOTERS LIST</h1>
         
         <div className="table">
-          <Table responsive="md" striped bordered hover id="urlTable">
+        <input className="form-control" id="voterInput" type="text" placeholder="Search Voter by Adress..." onKeyUp={() => this.voterSearch()}/>
+          <Table responsive="md" striped bordered hover id="voterTable">
             <thead>
               <tr>
                 <th>#</th>
