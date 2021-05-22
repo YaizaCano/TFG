@@ -18,32 +18,30 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_url",
-				"type": "string"
-			}
-		],
-		"name": "getURLReputation",
-		"outputs": [
-			{
-				"internalType": "int256",
-				"name": "",
-				"type": "int256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [],
-		"name": "getURLReputations",
+		"name": "getURLList",
 		"outputs": [
 			{
-				"internalType": "int256[]",
+				"components": [
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "int256",
+						"name": "reputation",
+						"type": "int256"
+					},
+					{
+						"internalType": "int256",
+						"name": "votes",
+						"type": "int256"
+					}
+				],
+				"internalType": "struct Reputation.URL[]",
 				"name": "",
-				"type": "int256[]"
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -56,11 +54,6 @@
 			{
 				"components": [
 					{
-						"internalType": "uint256",
-						"name": "reliability",
-						"type": "uint256"
-					},
-					{
 						"internalType": "address",
 						"name": "addr",
 						"type": "address"
@@ -69,24 +62,16 @@
 						"internalType": "string[]",
 						"name": "urlsVoted",
 						"type": "string[]"
+					},
+					{
+						"internalType": "int256[]",
+						"name": "votes",
+						"type": "int256[]"
 					}
 				],
 				"internalType": "struct Reputation.Voter[]",
 				"name": "",
 				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "showURLList",
-		"outputs": [
-			{
-				"internalType": "string[]",
-				"name": "",
-				"type": "string[]"
 			}
 		],
 		"stateMutability": "view",
