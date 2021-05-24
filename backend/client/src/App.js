@@ -11,7 +11,8 @@ class App extends Component {
     urllist: [],
     voterlist: [],
     urlnames:[],
-    //voteraddresses: [],
+    voteraddresses: [],
+    reliability: [],
     value: '',
     web3: {},
     accounts: [],
@@ -20,26 +21,23 @@ class App extends Component {
   async componentDidMount() {
     await axios.all([
       axios.get('/api/url-list'),
-      axios.get('/api/voter-list')
+      axios.get('/api/voter-list'),
+      axios.get('/api/url-names'),
+      axios.get('/api/voter-names'),
+      axios.get('/api/voter-reliability'),
     ])
-    .then(axios.spread((list, voters) => {
+    .then(axios.spread((list, voters, urlsnames, votersnames, votersreliability) => {
       const urllist = list.data;
       const voterlist = voters.data;
+      const urlnames = urlsnames.data;
+      const voteraddresses = votersnames.data
+      const reliability = votersreliability.data
       this.setState({urllist});
       this.setState({voterlist});
+      this.setState({urlnames});
+      this.setState({voteraddresses});
+      this.setState({reliability});
     }));
-
-    const urlnames = [];
-    this.state.urllist.map((url) => {
-      urlnames.push(url[0]);
-    })
-    this.setState({urlnames});
-
-    /*const voteraddresses = [];
-    this.state.voterlist.map((voter) => {
-      voteraddresses.push(voter[0]);
-    })
-    this.setState({voteraddresses});*/
 
     const web3 = new Web3(window.ethereum);
     web3.eth.handleRevert = true;
@@ -69,10 +67,21 @@ class App extends Component {
   }
 
   renderURLTableData() {
+    var votes = []
+    for(var i=0; i < this.state.voteraddresses.length; ++i) {
+      if (this.state.voteraddresses[i].toLowerCase() === this.state.accounts[0]) {
+        votes = this.state.voterlist[i][1]
+      }
+    }
     return this.state.urllist.map((url, index) => {
       //const { name, rep, votes } = url //destructuringç
       var rep = Number(50).toFixed(2)
       if (url[1] !== '0') rep = (Number(url[1]/url[2])*100).toFixed(2)
+
+      var disabled;
+      if (votes.includes(url[0]))
+        disabled=true;
+      else disabled=false;
       
       return (
         <tr key={index}>
@@ -80,10 +89,10 @@ class App extends Component {
           <td className="address">{url[0]}</td>
           <td>{rep}%</td>
           <td>
-            <Button onClick={() => this.handleReliable(url[0])} variant="success">Reliable</Button>
+            <Button id = {index} disabled={disabled} onClick={() => this.handleReliable(url[0])} variant="success">Reliable</Button>
           </td>
           <td>
-            <Button onClick={() => this.handleDangerous(url[0])} variant="danger">Dangerous</Button>
+            <Button id = {index} disabled={disabled} onClick={() => this.handleDangerous(url[0])} variant="danger">Dangerous</Button>
           </td>
         </tr>
       )
@@ -91,47 +100,25 @@ class App extends Component {
   }
 
   renderVoterTableData() {
-    //reliability is computed as Trust X Credibility. 
     return this.state.voterlist.map((voter, index) => {
-        //const { rel, add, list } = voter;
-        var trust = voter[1].length/100;
-        if (trust > '1') trust = 1;
-        
-        var credibility = this.computeCredibility(voter[1], voter[2]);
 
-        return (
-          <tr key={index}>
-            <td>{index}</td>
-            <td className="address">{voter[0]}</td>
-            <td>{Number(trust * credibility * 100).toFixed(2)}%</td>
-            <td>
-              <ul>
-                {voter[1].map((url) => {
-                  return (
-                    <li>{url}</li>
-                  )
-                })}
-              </ul>
-            </td>
-          </tr>
-        )
+      return (
+        <tr key={index}>
+          <td>{index}</td>
+          <td className="address">{voter[0]}</td>
+          <td>{this.state.reliability[index]}%</td>
+          <td>
+            <ul>
+              {voter[1].map((url) => {
+                return (
+                  <li>{url}</li>
+                )
+              })}
+            </ul>
+          </td>
+        </tr>
+      )
     })
-  }
-
-  computeCredibility(urls, votes) {
-    var cred = 0;
-    urls.map((name, index) => {
-      var i = this.state.urlnames.indexOf(name);
-      if (i !== -1) {
-        var url = this.state.urllist[i][1];
-        if (url >= 0) 
-          cred += Number(votes[index]);
-        else
-          cred -= Number(votes[index]);
-      }
-
-    })
-    return cred/votes.length;
   }
 
 
@@ -140,7 +127,6 @@ class App extends Component {
   }
     
   handleSubmit() {
-
     if (this.state.urlnames.includes(this.state.value)) {
       alert(this.state.value + ' is already in our database');
     } 
@@ -153,7 +139,6 @@ class App extends Component {
         alert(this.state.value +' has been added with initial reputation from account ' + this.state.accounts[0]);
       })
     }
-
   }
 
   urlSearch() {
