@@ -39,6 +39,7 @@ class App extends Component {
       this.setState({reliability});
     }));
 
+
     const web3 = new Web3(window.ethereum);
     web3.eth.handleRevert = true;
     this.setState({web3});
@@ -75,12 +76,16 @@ class App extends Component {
     }
     return this.state.urllist.map((url, index) => {
       //const { name, rep, votes } = url //destructuringç
-      var rep = Number(50).toFixed(2)
+      var rep = Number(0).toFixed(2)
       if (url[1] !== '0') rep = (Number(url[1]/url[2])*100).toFixed(2)
 
       var disabled;
-      if (votes.includes(url[0]))
+      var msgRel = "Realiable"
+      var msgDan = "Dangerous"
+      if (votes.includes(url[0])){
         disabled=true;
+        msgRel = msgDan = "Already voted"
+      }
       else disabled=false;
       
       return (
@@ -89,10 +94,10 @@ class App extends Component {
           <td className="address">{url[0]}</td>
           <td>{rep}%</td>
           <td>
-            <Button id = {index} disabled={disabled} onClick={() => this.handleReliable(url[0])} variant="success">Reliable</Button>
+            <Button disabled={disabled} onClick={() => this.handleReliable(url[0])} variant="success">{msgRel}</Button>
           </td>
           <td>
-            <Button id = {index} disabled={disabled} onClick={() => this.handleDangerous(url[0])} variant="danger">Dangerous</Button>
+            <Button disabled={disabled} onClick={() => this.handleDangerous(url[0])} variant="danger">{msgDan}</Button>
           </td>
         </tr>
       )
@@ -127,18 +132,13 @@ class App extends Component {
   }
     
   handleSubmit() {
-    if (this.state.urlnames.includes(this.state.value)) {
-      alert(this.state.value + ' is already in our database');
-    } 
-    else {
-      axios.post('/api/add-url', {
-        name: this.state.value,
-        from: this.state.accounts[0],
-      }).then((res) => {
-        console.log("Voted counted to " + this.state.value);
-        alert(this.state.value +' has been added with initial reputation from account ' + this.state.accounts[0]);
-      })
-    }
+    axios.post('/api/add-url', {
+      name: this.state.value,
+      from: this.state.accounts[0],
+    }).then((res) => {
+      alert(this.state.value +' has been added with initial reputation from account ' + this.state.accounts[0]);
+    }).catch(alert(this.state.value + ' is already in our database'))
+    
   }
 
   urlSearch() {
@@ -185,12 +185,12 @@ class App extends Component {
       <div className="App">
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.css" rel="stylesheet"/>
 
-        <h1>URL LIST</h1>
+        <h1>URLS LIST</h1>
 
         <form onSubmit={() => this.handleSubmit()}>
           <label>
             Add URL:
-            <input type="text" name="name" onChange={event => this.handleChange(event.target.value)}/>
+            <input className="add-url" type="text" name="name" onChange={event => this.handleChange(event.target.value)}/>
           </label>
           <input type="submit" value="Submit" />
         </form>

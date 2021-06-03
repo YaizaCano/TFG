@@ -1,14 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const web3 = require('./../web3/web3');
+const model1 = require('./../web3/web3model1');
+const model2 = require('./../web3/web3model2');
 
-router.post('/vote-reliable', web3.voteReliable);
-router.post('/vote-dangerous', web3.voteDangerous);
-router.get('/url-list', web3.getURLs);
-router.get('/voter-list', web3.getVoters);
-router.post('/add-url', web3.addURL);
-router.get('/url-names', web3.getURLsNames);
-router.get('/voter-names', web3.getVotersNames);
-router.get('/voter-reliability', web3.getVotersReliability);
+router.post('/vote-reliable', model1.voteReliable);
+router.post('/vote-dangerous', model1.voteDangerous);
+router.get('/url-list', model1.getURLs);
+router.get('/voter-list', model1.getVoters);
+router.post('/add-url', model1.addURL);
+router.get('/url-names', model1.getURLsNames);
+router.get('/voter-names', model1.getVotersNames);
+router.get('/voter-reliability', model1.getVotersReliability);
+
+router.get('/domain-list', model2.getDomains);
+router.get('/get-repurations', model2.getReputations);
+router.get('/get-participations', model2.getParticipations);
+router.get('/get-voterlist', model2.getVotersList);
+router.get('/get-voteraddr', model2.getVotersAddresses);
+router.get('/get-domainowners', model2.getDomainOwners);
+router.post('/add-domain', model2.createDomain);
+router.post('/vote-rel', model2.voteReliable);
+router.post('/vote-dang', model2.voteDangerous);
+router.get('/get-voterrel', model2.getVotersReliability);
+router.get('/get-domainbalances', model2.getDomainBalances);
 
 module.exports = router;

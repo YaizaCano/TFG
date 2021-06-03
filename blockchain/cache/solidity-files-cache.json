@@ -71,10 +71,10 @@
         "console"
       ]
     },
-    "/home/yaiza/TFG/TFG/blockchain/contracts/ReputationSystem.sol": {
-      "lastModificationDate": 1621689721844,
-      "contentHash": "009c72f834db535ed3516da97dc9679a",
-      "sourceName": "contracts/ReputationSystem.sol",
+    "/home/yaiza/TFG/TFG/blockchain/contracts/model1.sol": {
+      "lastModificationDate": 1622444758798,
+      "contentHash": "b17eab561fa3cfe0921711164c05e2fc",
+      "sourceName": "contracts/model1.sol",
       "solcConfig": {
         "version": "0.7.3",
         "settings": {
@@ -105,6 +105,43 @@
       ],
       "artifacts": [
         "Reputation"
+      ]
+    },
+    "/home/yaiza/TFG/TFG/blockchain/contracts/model2.sol": {
+      "lastModificationDate": 1622708539147,
+      "contentHash": "db3308e5c177db7a3e14c32394e26cb3",
+      "sourceName": "contracts/model2.sol",
+      "solcConfig": {
+        "version": "0.7.3",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "hardhat/console.sol"
+      ],
+      "versionPragmas": [
+        "^0.7.0"
+      ],
+      "artifacts": [
+        "Domain",
+        "DomainManager"
       ]
     }
   }
