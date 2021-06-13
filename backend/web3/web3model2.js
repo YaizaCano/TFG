@@ -6,7 +6,7 @@ const domainMetadata = require('../../blockchain/artifacts/contracts/model2.sol/
 let web3 = new Web3("http://127.0.0.1:8545/");
 web3.eth.handleRevert = true;
 const myContract = new web3.eth.Contract(managerMetadata.abi, 
-	'0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE');
+	'0x0165878A594ca255338adfa4d48449f69242Eb8F');
 
 
 

@@ -5,37 +5,7 @@ const metadata = require('../../blockchain/artifacts/contracts/model1.sol/Reputa
 let web3 = new Web3("http://127.0.0.1:8545/");
 web3.eth.handleRevert = true;
 const myContract = new web3.eth.Contract(metadata.abi, 
-	'0x71C95911E9a5D330f4D621842EC243EE1343292e');
-
-//global variables
-const urlnames = (async() =>  {  
-	const names = await globalUrlNames().catch(console.error);
-	return names;	
-})(); 
-
-const votersnames = (async() =>  {  
-	const names = await globalVoterNames().catch(console.error);
-	return names;	
-})(); 
-
-
-async function globalUrlNames(){
-	const urlList = await myContract.methods.getURLList().call().catch(console.error);
-	var aux = []
-	urlList.map((url) =>{
-		aux.push(url[0])
-	})
-	return aux
-}
-
-async function globalVoterNames(){
-	const votersList = await myContract.methods.getVotersList().call().catch(console.error);
-	var aux = []
-	votersList.map((voter) =>{
-		aux.push(voter[0])
-	})
-	return aux
-}
+	'0x5FbDB2315678afecb367f032d93F642f64180aa3');
 
 
 const voteReliable = async (req, res, next) => {
@@ -64,17 +34,29 @@ const addURL = async (req, res, next) => {
 }
 
 const getURLsNames = async (req, res, next) => {
-	const urls = await urlnames;
+	const urlList = await myContract.methods.getURLList().call().catch(console.error);
+	var urls = []
+	urlList.map((url) =>{
+		urls.push(url[0])
+	})
 	res.send(urls)
 }
 
 const getVotersNames = async (req, res, next) => {
-	const voters = await votersnames;
+	const votersList = await myContract.methods.getVotersList().call().catch(console.error);
+	var voters = []
+	votersList.map((voter) =>{
+		voters.push(voter[0])
+	})
 	res.send(voters)
 }
 
 const getVotersReliability = async (req, res, next) => {
-	const urls = await urlnames;
+	const urlList = await myContract.methods.getURLList().call().catch(console.error);
+	var urls = []
+	urlList.map((url) =>{
+		urls.push(url[0])
+	})
 	const voters = await myContract.methods.getVotersList().call().catch(console.error);
 	const list = await myContract.methods.getURLList().call().catch(console.error);
 

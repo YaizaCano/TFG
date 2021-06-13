@@ -108,11 +108,11 @@ class Model2 extends Component {
         disabled = true;
         msgRel = msgDan = "Owned"
       }
-      /*else if (balance == Number(0)){
+      else if (balance == Number(0)){
         disabled = true;
         msgRel = msgDan = "Out of gas";
         rep = '--';
-      }*/
+      }
       else if (votes.includes(url)){
         disabled=true;
         msgRel = msgDan = "Already voted"

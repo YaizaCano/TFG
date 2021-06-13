@@ -4,11 +4,11 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Model2 from './Model2';
-    //<App />
 
+    //<Model2 />
 ReactDOM.render(
   <React.StrictMode>
-    <Model2 />
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );

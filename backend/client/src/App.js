@@ -95,9 +95,7 @@ class App extends Component {
           <td>{rep}%</td>
           <td>
             <Button disabled={disabled} onClick={() => this.handleReliable(url[0])} variant="success">{msgRel}</Button>
-          </td>
-          <td>
-            <Button disabled={disabled} onClick={() => this.handleDangerous(url[0])} variant="danger">{msgDan}</Button>
+            <Button style={{marginLeft: '1rem'}} disabled={disabled} onClick={() => this.handleDangerous(url[0])} variant="danger">{msgDan}</Button>
           </td>
         </tr>
       )
@@ -132,12 +130,18 @@ class App extends Component {
   }
     
   handleSubmit() {
-    axios.post('/api/add-url', {
-      name: this.state.value,
-      from: this.state.accounts[0],
-    }).then((res) => {
-      alert(this.state.value +' has been added with initial reputation from account ' + this.state.accounts[0]);
-    }).catch(alert(this.state.value + ' is already in our database'))
+    if (this.state.urlnames.includes(this.state.value)){
+      alert(this.state.value + ' is already in our database')
+    }
+    else {
+      axios.post('/api/add-url', {
+        name: this.state.value,
+        from: this.state.accounts[0],
+      }).then((res) => {
+        alert(this.state.value +' has been added with initial reputation from account ' + this.state.accounts[0]);
+      }).catch(console.error)
+
+    }
     
   }
 
@@ -185,7 +189,7 @@ class App extends Component {
       <div className="App">
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.css" rel="stylesheet"/>
 
-        <h1>URLS LIST</h1>
+        <h1>MODEL1: URLS LIST</h1>
 
         <form onSubmit={() => this.handleSubmit()}>
           <label>
@@ -204,7 +208,7 @@ class App extends Component {
                 <th>#</th>
                 <th>Name</th>
                 <th>Reputation</th>
-                <th colSpan="2">Vote</th>
+                <th>Vote</th>
               </tr>
             </thead>
             <tbody>{this.renderURLTableData()}</tbody>
