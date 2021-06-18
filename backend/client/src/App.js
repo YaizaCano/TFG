@@ -13,6 +13,7 @@ class App extends Component {
     urlnames:[],
     voteraddresses: [],
     reliability: [],
+    urlsvoters: [],
     value: '',
     web3: {},
     accounts: [],
@@ -25,20 +26,22 @@ class App extends Component {
       axios.get('/api/url-names'),
       axios.get('/api/voter-names'),
       axios.get('/api/voter-reliability'),
+      axios.get('/api/url-voters'),
     ])
-    .then(axios.spread((list, voters, urlsnames, votersnames, votersreliability) => {
+    .then(axios.spread((list, voters, urlsnames, votersnames, votersreliability, urlsvtrs) => {
       const urllist = list.data;
       const voterlist = voters.data;
       const urlnames = urlsnames.data;
       const voteraddresses = votersnames.data
       const reliability = votersreliability.data
+      const urlsvoters = urlsvtrs.data
       this.setState({urllist});
       this.setState({voterlist});
       this.setState({urlnames});
       this.setState({voteraddresses});
       this.setState({reliability});
+      this.setState({urlsvoters});
     }));
-
 
     const web3 = new Web3(window.ethereum);
     web3.eth.handleRevert = true;
@@ -68,34 +71,43 @@ class App extends Component {
   }
 
   renderURLTableData() {
-    var votes = []
+    var votes = [];
     for(var i=0; i < this.state.voteraddresses.length; ++i) {
       if (this.state.voteraddresses[i].toLowerCase() === this.state.accounts[0]) {
         votes = this.state.voterlist[i][1]
       }
     }
     return this.state.urllist.map((url, index) => {
-      //const { name, rep, votes } = url //destructuringç
       var rep = Number(0).toFixed(2)
       if (url[1] !== '0') rep = (Number(url[1]/url[2])*100).toFixed(2)
 
-      var disabled;
-      var msgRel = "Realiable"
-      var msgDan = "Dangerous"
+      var disabledRel ="enabledRel";
+      var disabledDan ="enabledDan";
       if (votes.includes(url[0])){
-        disabled=true;
-        msgRel = msgDan = "Already voted"
+        disabledRel= "disabledRel"
+        disabledDan="disabledDan";
       }
-      else disabled=false;
+
+      var rel = Number(0);
+      if (this.state.urlsvoters[index] !== undefined) {
+        this.state.urlsvoters[index].map((addr) => {
+          var v = this.state.voteraddresses.indexOf(addr);
+          rel += Number(this.state.reliability[v])
+        })
+        if (rel != Number(0))
+          rel /= Number(this.state.urlsvoters[index].length)
+      }
+
       
       return (
         <tr key={index}>
-          <td>{index}</td>
+          <td className="urlEnum">{index}</td>
           <td className="address">{url[0]}</td>
           <td>{rep}%</td>
+          <td>{rel}%</td>
           <td>
-            <Button disabled={disabled} onClick={() => this.handleReliable(url[0])} variant="success">{msgRel}</Button>
-            <Button style={{marginLeft: '1rem'}} disabled={disabled} onClick={() => this.handleDangerous(url[0])} variant="danger">{msgDan}</Button>
+            <button className={disabledRel} onClick={() => this.handleReliable(url[0])}>Reliable</button>
+            <button className={disabledDan} onClick={() => this.handleDangerous(url[0])}>Dangerous</button>
           </td>
         </tr>
       )
@@ -107,9 +119,8 @@ class App extends Component {
 
       return (
         <tr key={index}>
-          <td>{index}</td>
+          <td className="voterEnum">{index}</td>
           <td className="address">{voter[0]}</td>
-          <td>{this.state.reliability[index]}%</td>
           <td>
             <ul>
               {voter[1].map((url) => {
@@ -132,6 +143,9 @@ class App extends Component {
   handleSubmit() {
     if (this.state.urlnames.includes(this.state.value)){
       alert(this.state.value + ' is already in our database')
+    }
+    else if (this.state.value.length == 0){
+      alert("Please insert a valid domain")
     }
     else {
       axios.post('/api/add-url', {
@@ -189,14 +203,14 @@ class App extends Component {
       <div className="App">
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.css" rel="stylesheet"/>
 
-        <h1>MODEL1: URLS LIST</h1>
+        <h1 className="titleUrl" >MODEL1: URLS LIST</h1>
 
         <form onSubmit={() => this.handleSubmit()}>
           <label>
-            Add URL:
+            <p>Add URL:</p>
             <input className="add-url" type="text" name="name" onChange={event => this.handleChange(event.target.value)}/>
           </label>
-          <input type="submit" value="Submit" />
+          <input className="submit" type="submit" value="Submit" />
         </form>
 
         <input className="form-control" id="urlInput" type="text" placeholder="Search URL by Name..." onKeyUp={() => this.urlSearch()}/>
@@ -208,6 +222,7 @@ class App extends Component {
                 <th>#</th>
                 <th>Name</th>
                 <th>Reputation</th>
+                <th>Reliability</th>
                 <th>Vote</th>
               </tr>
             </thead>
@@ -215,7 +230,7 @@ class App extends Component {
           </Table>
         </div>
 
-        <h1>VOTERS LIST</h1>
+        <h1 className="titleVoters">VOTERS LIST</h1>
         
         <input className="form-control" id="voterInput" type="text" placeholder="Search Voter by Adress..." onKeyUp={() => this.voterSearch()}/>
         <div className="table">
@@ -224,7 +239,6 @@ class App extends Component {
               <tr>
                 <th>#</th>
                 <th>Adress</th>
-                <th>Reputation</th>
                 <th>URLs Voted</th>
               </tr>
             </thead>

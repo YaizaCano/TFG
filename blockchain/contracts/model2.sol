@@ -11,7 +11,6 @@ contract Domain {
     uint256 votes;                       // votes received
     
     
-    
     constructor(address _owner, string memory _domain) {
         owner = _owner;
         domain = _domain;
@@ -27,14 +26,16 @@ contract Domain {
         return owner;
     }
     
-    function vote(bool _vote) public {
+    function vote(bool _vote, uint _initGas, address payable _address) public {
         votes++;
         if (_vote)
             reputation++;
         else
             reputation--;
             
-        //console.log("Domain gas: ", gasleft());
+        uint transGas = (_initGas - gasleft())*22 + 8887*22;
+        require(address(this).balance > transGas+(8887*22), "Not balance enough");
+        _address.transfer(transGas);
     }
     
     function getReputation() public view returns (int256) {
@@ -66,45 +67,54 @@ contract DomainManager {
     Voter[] voters;
     string[] domains;
     
+    
+    modifier DomainAlreadyExists(string memory _domain) {
+      require(keccak256(abi.encodePacked(reputations[_domain])) == keccak256(abi.encodePacked(address(0))), 
+        "The URL already exists in our db.");
+      _;
+   }
+   
+    modifier DomainDoesNotExists(string memory _domain) {
+       require(keccak256(abi.encodePacked(reputations[_domain])) != keccak256(abi.encodePacked(address(0))), 
+        "The Domain does not exists in our db.");
+        _;
+   }
+   
+   modifier NotOwner(string memory _domain) {
+       require(reputations[_domain].getOwner() == msg.sender, "You are not the owner of this domain");
+       _;
+   }
+   
+   modifier OwnerCantVote(string memory _domain) {
+        require(reputations[_domain].getOwner() != msg.sender, "You are the owner of this domain, you can not vote");
+        _;
+   }
+    
+    
     constructor() {
         console.log("Welcome to URL reputation system model #2");
     }
     
-    function createDomain(string memory _domain) public {
-        require(keccak256(abi.encodePacked(reputations[_domain])) == keccak256(abi.encodePacked(address(0))), 
-        "The URL already exists in our db.");
-        console.log("Amapolaaaa: ", msg.sender);
+    function createDomain(string memory _domain) public DomainAlreadyExists(_domain) {
         reputations[_domain] = new Domain(msg.sender, _domain);
         domains.push(_domain);
     }
     
-    function getDomain(string memory _domain) public view returns (Domain){
-        require(keccak256(abi.encodePacked(reputations[_domain])) != keccak256(abi.encodePacked(address(0))), 
-        "The Domain does not exists in our db.");
+    function getDomain(string memory _domain) public view DomainDoesNotExists(_domain) returns (Domain) {
         return reputations[_domain];
     }
     
-    function getDomainBalance(string memory _domain) public view returns (uint256) {
-        require(keccak256(abi.encodePacked(reputations[_domain])) != keccak256(abi.encodePacked(address(0))), 
-        "The Domain does not exists in our db.");
+    function getDomainBalance(string memory _domain) public view DomainDoesNotExists(_domain) returns (uint256) {
         return reputations[_domain].getBalance();
     }
     
-    function sendMoney(string memory _domain) public payable {
-        
-        require(keccak256(abi.encodePacked(reputations[_domain])) != keccak256(abi.encodePacked(address(0))), 
-        "The Domain does not exists in our db.");
-        require(reputations[_domain].getOwner() == msg.sender, "You are not the owner of this domain");
-        
+    function sendMoney(string memory _domain) public payable DomainDoesNotExists(_domain) NotOwner(_domain){
         bool sent = address(reputations[_domain]).send(msg.value);
         require(sent, "Failed to send Ether");
     }
     
-    function vote (string memory _domain, bool _vote) public {
-        //console.log("Manager gas: ", gasleft());
-        require(keccak256(abi.encodePacked(reputations[_domain])) != keccak256(abi.encodePacked(address(0))), 
-        "The Domain does not exists in our db.");
-        require(reputations[_domain].getOwner() != msg.sender, "You are the owner of this domain, you can not vote");
+    function vote (string memory _domain, bool _vote) public DomainDoesNotExists(_domain) OwnerCantVote(_domain) {
+        uint initGas = gasleft();
         uint v = getVoterIndex(_domain);
         if (_vote) {
             voters[v].votes.push(1);
@@ -112,7 +122,7 @@ contract DomainManager {
         else {
             voters[v].votes.push(-1);
         }
-        reputations[_domain].vote(_vote);
+        reputations[_domain].vote(_vote, initGas, msg.sender);
         
     }
     
@@ -124,21 +134,15 @@ contract DomainManager {
         return voters;
     }
     
-    function getDomainReputation(string memory _domain) public view returns (int256) {
-        require(keccak256(abi.encodePacked(reputations[_domain])) != keccak256(abi.encodePacked(address(0))), 
-        "The Domain does not exists in our db.");
+    function getDomainReputation(string memory _domain) public view DomainDoesNotExists(_domain) returns (int256) {
         return reputations[_domain].getReputation();
     }
     
-    function getDomainParticipation(string memory _domain) public view returns (uint256) {
-        require(keccak256(abi.encodePacked(reputations[_domain])) != keccak256(abi.encodePacked(address(0))), 
-        "The Domain does not exists in our db.");
+    function getDomainParticipation(string memory _domain) public view DomainDoesNotExists(_domain) returns (uint256) {
         return reputations[_domain].getVotes();
     }
     
-    function getDomainOwner(string memory _domain) public view returns (address) {
-        require(keccak256(abi.encodePacked(reputations[_domain])) != keccak256(abi.encodePacked(address(0))), 
-        "The Domain does not exists in our db.");
+    function getDomainOwner(string memory _domain) public view DomainDoesNotExists(_domain) returns (address) {
         return reputations[_domain].getOwner();
     }
     
@@ -163,5 +167,3 @@ contract DomainManager {
     }
  
 }
-
-

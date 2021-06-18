@@ -14,6 +14,7 @@ class Model2 extends Component {
     voters: [],
     votersaddr: [],
     voterrel: [],
+    domainsvoters: [],
     balances: [],
     owners: [],
     value: '',
@@ -31,8 +32,9 @@ class Model2 extends Component {
       axios.get('/api/get-domainowners'),
       axios.get('/api/get-voterrel'),
       axios.get('/api/get-domainbalances'),
+      axios.get('/api//get-domainvoters'),
     ])
-    .then(axios.spread((list, reps, parts, votrs, votaddr, owns, votrel, bals) => {
+    .then(axios.spread((list, reps, parts, votrs, votaddr, owns, votrel, bals, domainvtrs) => {
       const domains = list.data;
       const reputations = reps.data;
       const participations = parts.data;
@@ -41,6 +43,7 @@ class Model2 extends Component {
       const owners = owns.data;
       const voterrel = votrel.data;
       const balances = bals.data;
+      const domainsvoters = domainvtrs.data;
 
       this.setState({domains});
       this.setState({reputations});
@@ -50,8 +53,10 @@ class Model2 extends Component {
       this.setState({owners});
       this.setState({voterrel});
       this.setState({balances});
+      this.setState({domainsvoters});
 
     }));
+
 
     const web3 = new Web3(window.ethereum);
     web3.eth.handleRevert = true;
@@ -98,25 +103,43 @@ class Model2 extends Component {
                                                         this.state.participations[index])*100).toFixed(2)
 
 
+      var rel = Number(0);
+      if (this.state.domainsvoters[index] !== undefined) {
+        this.state.domainsvoters[index].map((addr) => {
+          var v = this.state.votersaddr.indexOf(addr);
+          rel += Number(this.state.voterrel[v])
+        })
+        if (rel != Number(0))
+          rel /= Number(this.state.domainsvoters[index].length)
+      }
+
+
+
       const balance = Number(this.state.balances[index])
 
-      var disabled = false;
-      var msgRel = "Realiable"
-      var msgDan = "Dangerous"
+      var disabledRel ="enabledRel";
+      var disabledDan ="enabledDan";
+      var msgRel = "Reliable";
+      var msgDan = "Dangerous";
       
       if (this.state.owners[index] !== undefined && this.state.owners[index].toLowerCase() === this.state.accounts[0]) {
-        disabled = true;
-        msgRel = msgDan = "Owned"
+        disabledRel= "disabledRel"
+        disabledDan="disabledDan"
+        msgRel=msgDan="Owner"
       }
-      else if (balance == Number(0)){
-        disabled = true;
+      else if (balance < Number(5127400)){
+        disabledRel= "disabledRel"
+        disabledDan="disabledDan";
         msgRel = msgDan = "Out of gas";
+        rel = '--';
         rep = '--';
       }
       else if (votes.includes(url)){
-        disabled=true;
-        msgRel = msgDan = "Already voted"
+        disabledRel= "disabledRel"
+        disabledDan="disabledDan";
       } 
+
+      
 
       
       return (
@@ -124,10 +147,11 @@ class Model2 extends Component {
           <td>{index}</td>
           <td className="address">{url}</td>
           <td>{rep}%</td>
+          <td>{rel}%</td>
           <td>{balance}</td>
           <td>
-            <Button disabled={disabled} onClick={() => this.handleReliable(url)} variant="success">{msgRel}</Button>
-            <Button style={{marginLeft: '1rem'}}disabled={disabled} onClick={() => this.handleDangerous(url)} variant="danger">{msgDan}</Button>
+            <button className={disabledRel} onClick={() => this.handleReliable(url)}>{msgRel}</button>
+            <button className={disabledDan} onClick={() => this.handleDangerous(url)}>{msgDan}</button>
           </td>
         </tr>
       )
@@ -141,7 +165,6 @@ class Model2 extends Component {
         <tr key={index}>
           <td>{index}</td>
           <td className="address">{voter[0]}</td>
-          <td>{this.state.voterrel[index]}%</td>
           <td>
             <ul>
               {voter[1].map((url) => {
@@ -160,20 +183,7 @@ class Model2 extends Component {
   handleChange(value) {
     this.setState({value})
   }
-    
-  handleSubmit() {
-    if (this.state.domains.includes(this.state.value)) {
-      alert(this.state.value + ' is already in our database')
-    } 
-    else {
-      axios.post('/api/add-domain', {
-        domain: this.state.value,
-        from: this.state.accounts[0],
-      }).then((res) => {
-        alert(this.state.value +' has been added with initial reputation from account ' + this.state.accounts[0]);
-      }).catch(console.error)
-    }
-  }
+
 
   urlSearch() {
     var input, filter, table, tr, td, i, txtValue;
@@ -219,15 +229,7 @@ class Model2 extends Component {
       <div className="App">
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.css" rel="stylesheet"/>
 
-        <h1>MODEL2: URLS LIST</h1>
-
-        <form onSubmit={() => this.handleSubmit()}>
-          <label>
-            Add URL:
-            <input className="add-url" type="text" name="name" onChange={event => this.handleChange(event.target.value)}/>
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
+        <h1 className="titleUrl">MODEL2: URLS LIST</h1>
 
         <input className="form-control" id="urlInput" type="text" placeholder="Search URL by Name..." onKeyUp={() => this.urlSearch()}/>
 
@@ -238,6 +240,7 @@ class Model2 extends Component {
                 <th>#</th>
                 <th>Name</th>
                 <th>Reputation</th>
+                <th>Reliabiity</th>
                 <th>Balance (wei)</th>
                 <th>Vote</th>
               </tr>
@@ -246,7 +249,7 @@ class Model2 extends Component {
           </Table>
         </div>
 
-        <h1>VOTERS LIST</h1>
+        <h1 className="titleVoters">VOTERS LIST</h1>
         
         <input className="form-control" id="voterInput" type="text" placeholder="Search Voter by Adress..." onKeyUp={() => this.voterSearch()}/>
         <div className="table">
@@ -255,7 +258,6 @@ class Model2 extends Component {
               <tr>
                 <th>#</th>
                 <th>Adress</th>
-                <th>Reputation</th>
                 <th>URLs Voted</th>
               </tr>
             </thead>

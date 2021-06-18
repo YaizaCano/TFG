@@ -1,72 +1,215 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 .App-logo {
-  height: 40vmin;
-  pointer-events: none;
+    height: 40vmin;
+    pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+    .App-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
 }
 
 .App-link {
-  color: #61dafb;
+    color: #61dafb;
 }
 
 @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
+
 
 /*-------------------------------------------------*/
-.table{
-  height: 60vh;
-  overflow-y: scroll;
-  border-collapse: collapse; /* Collapse borders */
-  width: 100%; /* Full-width */
-  border: 1px solid #ddd; /* Add a grey border */
-  margin-top: 1em;
+
+.table {
+    height: 60vh;
+    overflow-y: scroll;
+    border-collapse: collapse;
+    /* Collapse borders */
+    width: 100%;
+    /* Full-width */
+    border: 1px solid #ddd;
+    /* Add a grey border */
+    margin-top: 1em;
 }
 
-.form-control{
-  margin-top: 1em;
+th {
+    font-size: 2rem;
 }
 
-ul {
-  overflow-y: scroll;
-  height: 4em;
-  list-style: none;
+td {
+    font-size: 2rem;
 }
 
-li {
-  list-style-type: none;
-  text-align: left;
+.form-control {
+    margin-top: 2rem;
+    margin-left: 2rem;
 }
 
+.form-control::placeholder {
+    font-style: italic;
+    font-size: 1.6rem;
+}
 
 .address {
-  text-align: left;
+    text-align: left;
+    font-size: 2rem;
+}
+
+label {
+    font-family: 'Courier New', monospace;
+    font-size: 1.6rem;
+    font-weight: 400;
 }
 
 .add-url {
-  width: 30vw;
+    margin-top: 1rem;
+    width: 50vw;
+    height: 4vh;
+    font-weight: 400;
+    overflow-x: scroll;
+}
+
+p {
+    display: inline;
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+.submit {
+    margin-left: 0.5rem;
+    width: 5vw;
+    height: 4vh;
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    background-color: white;
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 3px;
+    border-right-color: #0BF996;
+    border-bottom-width: 3px;
+    border-bottom-color: #F90B6D;
+    padding-bottom: 0;
+}
+
+.submit:hover {
+    background-color: #F90B6D;
+    border-bottom-color: #0BF996;
+    color: white;
+    box-shadow: 3px 3px #049156;
+}
+
+.titleUrl {
+    margin-top: 3rem;
+    font-family: 'Courier New', monospace;
+    color: #F90B6D;
+    font-size: 6rem;
+    font-weight: 300;
+}
+
+.titleVoters {
+    margin-top: 3rem;
+    font-family: 'Courier New', monospace;
+    color: #0BF996;
+    font-size: 6rem;
+    font-weight: 300;
+}
+
+div {
+    margin-top: 4rem;
+    margin-left: 2rem;
+    margin-right: 4rem;
+}
+
+.urlEnum {
+    color: #F90B6D;
+    font-weight: bold;
+}
+
+.voterEnum {
+    color: #0BF996;
+    font-weight: bold;
+}
+
+ul {
+    text-align: left;
+    overflow-y: scroll;
+    height: 12rem;
+}
+
+.disabledRel {
+    height: 3rem;
+    font-family: 'Courier New', monospace;
+    font-size: 1.6rem;
+    border: 1px solid #999999;
+    color: #666666;
+    cursor: default;
+    text-decoration-line: line-through;
+    border-radius: 2rem;
+}
+
+.disabledDan {
+    margin-left: 1rem;
+    height: 3rem;
+    font-family: 'Courier New', monospace;
+    font-size: 1.6rem;
+    border: 1px solid #999999;
+    color: #666666;
+    cursor: default;
+    text-decoration-line: line-through;
+    border-radius: 2rem;
+}
+
+.enabledRel {
+    background-color: white;
+    border-color: #0BF996;
+    height: 3rem;
+    font-family: 'Courier New', monospace;
+    font-size: 1.6rem;
+    padding-bottom: 0;
+    font-weight: 500;
+    border-radius: 2rem;
+}
+
+.enabledRel:hover {
+    background-color: #0BF996;
+    box-shadow: 3px 3px #049156;
+}
+
+.enabledDan {
+    margin-left: 1rem;
+    background-color: white;
+    border-color: #F90B6D;
+    height: 3rem;
+    font-family: 'Courier New', monospace;
+    font-size: 1.6rem;
+    padding-bottom: 0;
+    border-radius: 2rem;
+}
+
+.enabledDan:hover {
+    background-color: #F90B6D;
+    box-shadow: 3px 3px #A30446;
+    color: white;
+    font-weight: 600;
 }

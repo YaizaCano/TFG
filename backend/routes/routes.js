@@ -11,6 +11,7 @@ router.post('/add-url', model1.addURL);
 router.get('/url-names', model1.getURLsNames);
 router.get('/voter-names', model1.getVotersNames);
 router.get('/voter-reliability', model1.getVotersReliability);
+router.get('/url-voters', model1.getURLsVoters);
 
 router.get('/domain-list', model2.getDomains);
 router.get('/get-repurations', model2.getReputations);
@@ -23,5 +24,6 @@ router.post('/vote-rel', model2.voteReliable);
 router.post('/vote-dang', model2.voteDangerous);
 router.get('/get-voterrel', model2.getVotersReliability);
 router.get('/get-domainbalances', model2.getDomainBalances);
+router.get('/get-domainvoters', model2.getDomainsVoters);
 
 module.exports = router;
