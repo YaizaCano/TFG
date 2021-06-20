@@ -1,42 +1,6 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/home/tiendeo/TFG/blockchain/contracts/Greeter.sol": {
-      "lastModificationDate": 1623398134204,
-      "contentHash": "8e4b943890d396929e7d2875c8d47222",
-      "sourceName": "contracts/Greeter.sol",
-      "solcConfig": {
-        "version": "0.7.3",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "hardhat/console.sol"
-      ],
-      "versionPragmas": [
-        "^0.7.0"
-      ],
-      "artifacts": [
-        "Greeter"
-      ]
-    },
     "/home/tiendeo/TFG/blockchain/node_modules/hardhat/console.sol": {
       "lastModificationDate": 1623398135296,
       "contentHash": "cc4777addd464ea56fa35b1c45df0591",
