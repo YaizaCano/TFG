@@ -5,9 +5,36 @@ const metadata = require('../../blockchain/artifacts/contracts/model1.sol/Reputa
 let web3 = new Web3("http://127.0.0.1:8545/");
 web3.eth.handleRevert = true;
 const myContract = new web3.eth.Contract(metadata.abi,
-    '0x610178dA211FEF7D417bC0e6FeD39F05609AD788');
+    '0x5FbDB2315678afecb367f032d93F642f64180aa3');
 
 const maxCred = Number(20);
+
+const listenEvents = async() => {
+    await myContract.getPastEvents('newURL', {
+            fromBlock: 0,
+            toBlock: 'latest'
+        })
+        .then(function(events) {
+            console.log(events)
+        });
+    await myContract.getPastEvents('votePositive', {
+            fromBlock: 0,
+            toBlock: 'latest'
+        })
+        .then(function(events) {
+            console.log(events)
+        });
+    await myContract.getPastEvents('voteNegative', {
+            fromBlock: 0,
+            toBlock: 'latest'
+        })
+        .then(function(events) {
+            console.log(events)
+        });
+
+}
+
+
 
 const voteReliable = async(req, res, next) => {
     const voteReliable = await myContract.methods.vote(req.body.name, true).send({ from: req.body.from }).catch(console.error);
@@ -91,24 +118,24 @@ const getVotersReliability = async(req, res, next) => {
 }
 
 const getURLsVoters = async(req, res, next) => {
-	const urlList = await myContract.methods.getURLList().call().catch(console.error);
+    const urlList = await myContract.methods.getURLList().call().catch(console.error);
     var urls = [];
     urlList.map((url) => {
         urls.push(url[0])
     })
     const voters = await myContract.methods.getVotersList().call().catch(console.error);
 
-	var urlsvoters = []
-	urls.map((name) => {
-		var voterlist = [];
-		voters.map((voter) => {
-			if (voter[1].includes(name))
-				voterlist.push(voter[0])
-		})
-		urlsvoters.push(voterlist)
-	})
-	
-	res.send(urlsvoters)
+    var urlsvoters = []
+    urls.map((name) => {
+        var voterlist = [];
+        voters.map((voter) => {
+            if (voter[1].includes(name))
+                voterlist.push(voter[0])
+        })
+        urlsvoters.push(voterlist)
+    })
+
+    res.send(urlsvoters)
 }
 
 //blockchain

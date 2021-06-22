@@ -73,8 +73,8 @@
       ]
     },
     "/home/tiendeo/TFG/blockchain/contracts/model1.sol": {
-      "lastModificationDate": 1623398134204,
-      "contentHash": "b17eab561fa3cfe0921711164c05e2fc",
+      "lastModificationDate": 1624345068778,
+      "contentHash": "047ff65c754b54ba85f844666094639b",
       "sourceName": "contracts/model1.sol",
       "solcConfig": {
         "version": "0.7.3",

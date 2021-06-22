@@ -5,6 +5,12 @@ pragma experimental ABIEncoderV2;
 import "hardhat/console.sol";
 
 contract Reputation {
+    
+    //event newURL(string indexed _url);
+    //event votePositive(string indexed _url, address indexed _voter);
+    //event voteNegative(string indexed _url, address indexed _voter);
+    
+    
     struct Voter {
         address addr;           // person ho has voted
         string[] urlsVoted;     // urls voted by a person
@@ -33,6 +39,7 @@ contract Reputation {
             votes: 0
         }));
         console.log("Added URL '%s' with default neutral reputation", _url);
+        //emit newURL(_url);
     }
     
     function vote (string memory _url, bool _vote) public {
@@ -42,10 +49,12 @@ contract Reputation {
         if (_vote) {
             urlList[i].reputation++;
             voters[v].votes.push(1);
+            //emit votePositive(_url, msg.sender);
         }
         else {
             urlList[i].reputation--;
             voters[v].votes.push(-1);
+            //emit voteNegative(_url, msg.sender);
         }
     }
     
